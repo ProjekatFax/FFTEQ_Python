@@ -1,10 +1,15 @@
 import soundfile as sf
 import matplotlib.pyplot as plt
 import numpy as np
+import sys
+import presets
 
+sound_wav = str(sys.argv[1])
+preset_arg = str(sys.argv[2])
 
 # Input the wave file
-data , rate = sf.read("random_mono.wav")
+data , rate = sf.read(sound_wav)
+
 length = data.shape[0]/rate
 time = np.linspace(0,length,data.shape[0])
 
@@ -13,6 +18,7 @@ FFT_data = np.fft.rfft(data)
 
 # Get the list of frequencies
 freq = np.fft.rfftfreq(len(data), d=1./rate)
+print(freq)
 
 #Add plots
 fig, axs = plt.subplots(2,2)
@@ -30,38 +36,13 @@ axs[0,1].title.set_text('original signal FFT')
 axs[0,1].set(xlabel="Frequency[Hz]", ylabel="Amplitude")
 
 
-
 #generate an array, 
 #which contains the frequencies where the gaussian function will be generated
 #it contains 10 elements
 gauss_freq = [31,62,125,250,500,1000,2000,4000,8000,16000] 
 
-
-#the amplitudes of the gaussian functions
-amplitude_31 = 0
-amplitude_62 = 0
-amplitude_125 = 0
-amplitude_250 = 0
-amplitude_500 = 0
-amplitude_1000 = 3
-amplitude_2000 = 3
-amplitude_4000 = 3
-amplitude_8000 = 3
-amplitude_16000 = 3 
-
-
-#an array which contains the amplitudes of the gaussian functions 
-amplitude =[amplitude_31,
-            amplitude_62,
-            amplitude_125,
-            amplitude_250,
-            amplitude_500,
-            amplitude_1000,
-            amplitude_2000,
-            amplitude_4000,
-            amplitude_8000,
-            amplitude_16000]
-
+#set preset defined in argument
+amplitude = presets.set_presets(preset_arg)
 
 #calculate the gaussian function
 gaussian_function = 0
@@ -84,7 +65,7 @@ FFT_data = FFT_data/normalize_value
 newdata = np.fft.irfft(FFT_data)
 
 # And save it to a new wave file
-sf.write(file="test1.wav", data=newdata, samplerate=rate)
+sf.write(file="filtered_output.wav", data=newdata, samplerate=rate)
 
 #plot the results
 axs[1,0].plot(time, newdata)
@@ -98,3 +79,5 @@ axs[1,1].title.set_text('filtered signal FFT')
 axs[1,1].set(xlabel="Frequency[Hz]", ylabel="Amplitude")
 
 plt.show()
+
+
